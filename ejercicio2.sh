@@ -1,20 +1,19 @@
 #!/bin/bash
 
-$2 &
-sleep 6
-pid=$( pgrep $1 )
-echo "PID:" $pid
-estado=$(ps -o stat= -p $pid)
-echo "Estado:" $estado
+#ejecuta el path
+$2 > /dev/null &
+
+#registra el pid y el estado
+#revisa si ha cambiado el estado
 while true; do
-	if [ $(ps -o stat= -p $pid) = $estado ]; then
-        echo "Estado:" $estado
-	elif [ $(ps -o stat= -p $pid) != $estado ]; then
-		if [ [$(ps -o stat= -p $pid)] != [ "Sl+" || "Rl+" ] ]; then
-			$2 &
-		else
-	    	echo "Cambio en estado:" $(ps -o stat= -p $pid)
-		fi
+	pid=$( pgrep $1 )
+	estado=$( ps -o stat= -p $pid )
+	
+	if [ $( pgrep -c $1 ) = 2 ]; then
+		$2 >/dev/null &
+	else
+		echo "Estado": $estado
 	fi
-	sleep 10	
+	sleep 10
 done
+
